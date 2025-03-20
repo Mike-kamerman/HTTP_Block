@@ -1,0 +1,54 @@
+﻿FUNCTION_BLOCK "GET_Request"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT 
+      start : Bool;
+      url : String;
+      queryParams : String;
+   END_VAR
+
+   VAR_OUTPUT 
+      connected : Bool;
+      done : Bool;
+      busy : Bool;
+      error : Bool;
+      status : Word;
+      diagnostics : "typeDiagnostics";
+      responseCode : UInt;
+      length : UDInt;
+   END_VAR
+
+   VAR_IN_OUT 
+      responseData : Array[*] of Char;
+   END_VAR
+
+   VAR 
+      hwID : HW_ANY;
+      connID : CONN_OUC := 16#0001;
+      keepConnection : Bool;
+      userFields : Array[0..255] of Char;
+      tls { S7_SetPoint := 'False'} : "LHTTP_typeTLS";
+   END_VAR
+
+
+BEGIN
+	"LHTTP_Get_DB"(execute:=#start,
+	               hwID:=#hwID,
+	               connID:=#connID,
+	               url:=#url,
+	               queryParams:=#queryParams,
+	               userFields:=#userFields,
+	               tls:=#tls,
+	               keepConnection:=#keepConnection,
+	               connected=>#connected,
+	               done=>#done,
+	               busy=>#busy,
+	               error=>#error,
+	               status=>#status,
+	               diagnostics=>#diagnostics,
+	               responseCode=>#responseCode,
+	               length=>#length,
+	               responseData:=#responseData);
+	
+END_FUNCTION_BLOCK
+
