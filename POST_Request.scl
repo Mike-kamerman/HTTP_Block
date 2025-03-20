@@ -1,0 +1,63 @@
+﻿FUNCTION_BLOCK "POST_Request"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT 
+      start : Bool;
+      url : String;
+      data : String;
+   END_VAR
+
+   VAR_OUTPUT 
+      connected : Bool;
+      done : Bool;
+      busy : Bool;
+      error : Bool;
+      status : Word;
+      diagnostics : "typeDiagnostics";
+      responseCode : UInt;
+      length : UDInt;
+   END_VAR
+
+   VAR_IN_OUT 
+      responseData : Array[*] of Char;
+   END_VAR
+
+   VAR 
+      hwID : HW_ANY;
+      connID : CONN_OUC;
+      keepConnection : Bool;
+   END_VAR
+
+   VAR_TEMP 
+      arrayLengte : USInt;
+   END_VAR
+
+   VAR CONSTANT 
+      contentType : String := 'application/json';
+      method : USInt;
+   END_VAR
+
+
+BEGIN
+	"LHTTP_PostPut_DB"(execute := #start,
+	                     hwID := #hwID,
+	                     connID := #connID,
+	                     method := #method,
+	                     url := #url,
+	                     contentType := #contentType,
+	                     data := #data,
+	                     //userFields := "Data_block_1".header_data, //is een header voor https
+	                     //tls := "Data_block_1".tls,//niet nodig voor http
+	                     keepConnection := #keepConnection,
+	                     timeOut := T#10s,
+	                     connected => #connected,
+	                     done => #done,
+	                     busy => #busy,
+	                     error => #error,
+	                     status => #status,
+	                     diagnostics => #diagnostics,
+	                     responseCode => #responseCode,
+	                     length => #length,
+	                     responseData := #responseData);
+END_FUNCTION_BLOCK
+
